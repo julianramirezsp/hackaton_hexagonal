@@ -1,38 +1,78 @@
-/**
- * ADAPTADOR DE SALIDA · repositorio en un archivo JSON                     (ETAPA 2 · tu trabajo)
- *
- * Cumple EL MISMO puerto que el de memoria, pero guarda las evaluaciones en un archivo: un arreglo JSON.
- * Así los datos sobreviven a un reinicio del servidor (y, en la Etapa 6, a un contenedor nuevo).
- *
- *   crearRepositorioArchivo('/ruta/evaluaciones.json')
- *
- * Detalles que las pruebas comprueban:
- *   · si el archivo todavía no existe, `listar()` devuelve [] (no es un error);
- *   · al guardar por primera vez se crea el archivo… y también su carpeta, si hace falta (mira mkdirSync con { recursive: true });
- *   · otra instancia apuntando al mismo archivo ve lo que guardó la primera;
- *   · las mismas reglas del contrato que el de memoria (ids, copias, orden).
- *
- * Usa node:fs en su versión síncrona (readFileSync, writeFileSync, existsSync, mkdirSync) y node:path.
- *
- * Comprueba con:   npm run verificar -- 2
- */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import fs from 'node:fs';
+import path from 'node:path';
 
-export function crearRepositorioArchivo(ruta) {
-  // TODO etapa 2: leer() y escribir(lista) sobre `ruta`, y los cuatro métodos del puerto apoyados en ellos.
+export function crearRepositorioArchivo(rutaArchivo = 'datos/evaluaciones.json') {
+  const rutaAbsoluta = path.resolve(rutaArchivo);
+
+  // Carga los datos sin crear el archivo si no existe
+  const cargarDatos = () => {
+    try {
+      if (!fs.existsSync(rutaAbsoluta)) {
+        return [];
+      }
+      const contenido = fs.readFileSync(rutaAbsoluta, 'utf-8');
+      return JSON.parse(contenido || '[]');
+    } catch {
+      return [];
+    }
+  };
+
+  // Solo al guardar se crea la carpeta y el archivo
+  const guardarDatos = (datos) => {
+    const directorio = path.dirname(rutaAbsoluta);
+    if (!fs.existsSync(directorio)) {
+      fs.mkdirSync(directorio, { recursive: true });
+    }
+    fs.writeFileSync(rutaAbsoluta, JSON.stringify(datos, null, 2), 'utf-8');
+  };
+
   return {
     listar() {
-      throw new Error('TODO etapa 2: listar');
+      // Devuelve copias de cada elemento
+      return cargarDatos().map((e) => ({ ...e }));
     },
+
     obtener(id) {
-      throw new Error('TODO etapa 2: obtener');
+      const datos = cargarDatos();
+      const evaluacion = datos.find((e) => Number(e.id) === Number(id));
+      // Devuelve undefined si no existe, o una copia si existe
+      return evaluacion ? { ...evaluacion } : undefined;
     },
+
     guardar(evaluacion) {
-      throw new Error('TODO etapa 2: guardar');
+      const datos = cargarDatos();
+      const copy = { ...evaluacion };
+
+      if (copy.id === undefined || copy.id === null) {
+        const maxId = datos.reduce((max, e) => Math.max(max, Number(e.id) || 0), 0);
+        copy.id = maxId + 1;
+      } else {
+        copy.id = Number(copy.id);
+      }
+
+      const indice = datos.findIndex((e) => Number(e.id) === copy.id);
+
+      if (indice >= 0) {
+        datos[indice] = { ...copy };
+      } else {
+        datos.push({ ...copy });
+      }
+
+      guardarDatos(datos);
+      return { ...copy };
     },
+
     eliminar(id) {
-      throw new Error('TODO etapa 2: eliminar');
-    },
+      const datos = cargarDatos();
+      const idNum = Number(id);
+      const nuevosDatos = datos.filter((e) => Number(e.id) !== idNum);
+
+      if (nuevosDatos.length === datos.length) {
+        return false;
+      }
+
+      guardarDatos(nuevosDatos);
+      return true;
+    }
   };
 }

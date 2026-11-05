@@ -1,30 +1,44 @@
-/**
- * ADAPTADOR DE SALIDA · repositorio en memoria                             (ETAPA 2 · tu trabajo)
- *
- * Cumple el puerto de ../../aplicacion/puerto-repositorio.js guardando las evaluaciones en un arreglo.
- * Es el adaptador más simple: sirve para las pruebas y para arrancar sin configurar nada.
- *
- * Lo importante es el CONTRATO (lee el puerto): ids que asigna él mismo (mayor + 1), copias en vez de las referencias
- * originales y los cuatro métodos con el significado exacto. Las pruebas de la Etapa 2 son las MISMAS para el
- * adaptador de archivo: si los dos las pasan, son intercambiables y el resto de la aplicación no se entera.
- *
- * Comprueba con:   npm run verificar -- 2
- */
-
 export function crearRepositorioMemoria() {
-  // TODO etapa 2: un arreglo con las evaluaciones, y los cuatro métodos del puerto.
+  const evaluaciones = new Map();
+
+  const calcularSiguienteId = () => {
+    let maxId = 0;
+    for (const id of evaluaciones.keys()) {
+      if (id > maxId) maxId = id;
+    }
+    return maxId + 1;
+  };
+
   return {
     listar() {
-      throw new Error('TODO etapa 2: listar');
+      // Retorna copias de cada elemento
+      return Array.from(evaluaciones.values()).map((e) => ({ ...e }));
     },
+
     obtener(id) {
-      throw new Error('TODO etapa 2: obtener');
+      const evaluacion = evaluaciones.get(Number(id));
+      // Devuelve undefined si no existe, o una copia si existe
+      return evaluacion ? { ...evaluacion } : undefined;
     },
+
     guardar(evaluacion) {
-      throw new Error('TODO etapa 2: guardar');
+      const copy = { ...evaluacion };
+      if (copy.id === undefined || copy.id === null) {
+        copy.id = calcularSiguienteId();
+      } else {
+        copy.id = Number(copy.id);
+      }
+
+      evaluaciones.set(copy.id, { ...copy });
+      return { ...copy };
     },
+
     eliminar(id) {
-      throw new Error('TODO etapa 2: eliminar');
-    },
+      const idNum = Number(id);
+      if (!evaluaciones.has(idNum)) {
+        return false;
+      }
+      return evaluaciones.delete(idNum);
+    }
   };
 }

@@ -1,0 +1,54 @@
+{
+  "esquema": 1,
+  "equipo": "julian",
+  "integrantes": [
+    "Julian Ramirez Espinosa"
+  ],
+  "actualizado": "2026-11-05T20:35:57.943Z",
+  "entorno": {
+    "node": "v24.21.0",
+    "sistema": "win32 x64"
+  },
+  "etapas": {
+    "0": {
+      "titulo": "Contenedor listo",
+      "puntos": 10,
+      "extra": false,
+      "ok": true,
+      "primeraVez": "2026-11-05T18:35:20.456Z",
+      "ultima": "2026-11-05T18:35:20.456Z",
+      "comprobaciones": "2/2",
+      "evidencia": "docker 29.9.2"
+    },
+    "1": {
+      "titulo": "Casos de uso",
+      "puntos": 15,
+      "extra": false,
+      "ok": true,
+      "primeraVez": "2026-11-05T18:37:47.341Z",
+      "ultima": "2026-11-05T18:37:47.341Z",
+      "comprobaciones": "9/9",
+      "evidencia": ""
+    },
+    "2": {
+      "titulo": "Adaptadores de salida",
+      "puntos": 15,
+      "extra": false,
+      "ok": true,
+      "primeraVez": "2026-11-05T18:40:23.800Z",
+      "ultima": "2026-11-05T18:40:23.800Z",
+      "comprobaciones": "15/15",
+      "evidencia": ""
+    },
+    "3": {
+      "titulo": "Adaptador de entrada: la API HTTP",
+      "puntos": 20,
+      "extra": false,
+      "ok": false,
+      "primeraVez": null,
+      "ultima": "2026-11-05T20:35:57.976Z",
+      "comprobaciones": "0/1",
+      "evidencia": ""
+    }
+  }
+}
